@@ -1,9 +1,3 @@
-# Welcome to your Lovable project
-
-## Project info
-
-**URL**: https://lovable.dev/projects/e169ba03-50a7-42e3-a304-e88d1094d899
-
 # RetroMerch
 
 Turn retro posters into wearable merch. This repository contains the frontend for RetroMerch — a Vite + React + TypeScript site styled with Tailwind and shadcn-ui components.
