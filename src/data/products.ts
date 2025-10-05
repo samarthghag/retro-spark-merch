@@ -18,7 +18,7 @@ export const products: Product[] = [
   {
     id: "anime-warrior",
     title: "Cyberpunk Warrior",
-    price: 29.99,
+    price: 129,
     category: "Anime",
     image: posterAnime1,
     description: "Vintage anime poster featuring a dramatic cyberpunk warrior in retro 80s style.",
@@ -26,7 +26,7 @@ export const products: Product[] = [
   {
     id: "retro-supercar",
     title: "Synthwave Supercar",
-    price: 34.99,
+    price: 159,
     category: "Cars",
     image: posterCar1,
     description: "Iconic 80s sports car against a neon synthwave sunset with palm trees and grid lines.",
@@ -34,7 +34,7 @@ export const products: Product[] = [
   {
     id: "classic-motorcycle",
     title: "Freedom Rider",
-    price: 32.99,
+    price: 149,
     category: "Bikes",
     image: posterBike1,
     description: "Classic American motorcycle poster with bold vintage typography and patriotic elements.",
@@ -42,7 +42,7 @@ export const products: Product[] = [
   {
     id: "action-hero",
     title: "Last Stand",
-    price: 31.99,
+    price: 139,
     category: "Movies",
     image: posterMovie1,
     description: "Epic 80s action movie poster with dramatic lighting and bold retro typography.",
@@ -50,7 +50,7 @@ export const products: Product[] = [
   {
     id: "rock-concert",
     title: "Electric Night",
-    price: 28.99,
+    price: 119,
     category: "Music",
     image: posterMusic1,
     description: "Psychedelic rock concert poster with 70s inspired colors and bold geometric patterns.",
@@ -58,12 +58,21 @@ export const products: Product[] = [
   {
     id: "mountain-sunset",
     title: "Wilderness Vista",
-    price: 27.99,
+    price: 99,
     category: "Nature",
     image: posterNature1,
     description: "Vintage national park travel poster with minimalist geometric mountain landscape.",
   },
 ];
+
+// Stripe price IDs
+export const STRIPE_PRICES = {
+  POSTER: "price_1SEr1B3iuoPLvCHrBT9rSml7", // ₹129
+  MERCH: "price_1SEr1f3iuoPLvCHrdEbBExpd", // ₹1299
+};
+
+// Merch pricing
+export const MERCH_PRICE = 1299;
 
 export const categories = [
   "All",

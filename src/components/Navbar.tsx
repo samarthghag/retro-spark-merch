@@ -1,13 +1,15 @@
 import { Link } from "react-router-dom";
-import { ShoppingCart, Sparkles } from "lucide-react";
+import { ShoppingCart, Sparkles, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavbarProps {
   cartItemCount?: number;
 }
 
 export default function Navbar({ cartItemCount = 0 }: NavbarProps) {
+  const { user, signOut } = useAuth();
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -32,9 +34,21 @@ export default function Navbar({ cartItemCount = 0 }: NavbarProps) {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" asChild className="hidden md:flex">
-              <Link to="/login">Login</Link>
-            </Button>
+            {user ? (
+              <>
+                <span className="text-sm text-muted-foreground hidden md:inline">
+                  {user.email}
+                </span>
+                <Button variant="ghost" size="sm" onClick={signOut} className="hidden md:flex">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Button variant="ghost" size="sm" asChild className="hidden md:flex">
+                <Link to="/login">Login</Link>
+              </Button>
+            )}
             <Button variant="outline" size="sm" asChild>
               <Link to="/cart" className="relative">
                 <ShoppingCart className="w-4 h-4" />

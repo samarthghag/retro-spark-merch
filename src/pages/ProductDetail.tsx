@@ -1,22 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { products } from "@/data/products";
+import { products, STRIPE_PRICES, MERCH_PRICE } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [selectedMerchType, setSelectedMerchType] = useState<string | null>(null);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const product = products.find((p) => p.id === id);
+
+  useEffect(() => {
+    if (!user) {
+      toast({
+        title: "Login Required 🔒",
+        description: "Please login to view product details and make purchases.",
+        variant: "destructive",
+      });
+      navigate("/login");
+    }
+  }, [user, navigate, toast]);
 
   if (!product) {
     return (
@@ -47,12 +62,44 @@ export default function ProductDetail() {
     });
   };
 
-  const handleAddToCart = () => {
-    toast({
-      title: "Added to Cart! 🛍️",
-      description: `${product.title} has been added to your cart.`,
-    });
-    setTimeout(() => navigate("/cart"), 1000);
+  const handleCheckout = async (productType: "poster" | "merch") => {
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please login to proceed with checkout.",
+        variant: "destructive",
+      });
+      navigate("/login");
+      return;
+    }
+
+    setIsCheckingOut(true);
+    try {
+      const priceId = productType === "poster" ? STRIPE_PRICES.POSTER : STRIPE_PRICES.MERCH;
+      
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { priceId, productType },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+        toast({
+          title: "Redirecting to Checkout ✨",
+          description: "Opening Stripe checkout in a new tab...",
+        });
+      }
+    } catch (error: any) {
+      console.error("Checkout error:", error);
+      toast({
+        title: "Checkout Failed",
+        description: error.message || "Failed to create checkout session",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   return (
@@ -106,19 +153,20 @@ export default function ProductDetail() {
                   </span>
                 </div>
                 <h1 className="text-4xl md:text-5xl font-bold mb-4">{product.title}</h1>
-                <p className="text-3xl font-bold text-gradient mb-6">${product.price}</p>
-                <p className="text-lg text-muted-foreground">{product.description}</p>
+                <p className="text-lg text-muted-foreground mb-6">{product.description}</p>
               </div>
 
               <div className="glass-card p-6 rounded-2xl space-y-4">
                 <h3 className="text-xl font-bold">Buy as Poster</h3>
+                <p className="text-2xl font-bold text-gradient">₹{product.price}</p>
                 <Button
                   size="lg"
                   variant="neon"
                   className="w-full"
-                  onClick={handleAddToCart}
+                  onClick={() => handleCheckout("poster")}
+                  disabled={isCheckingOut}
                 >
-                  🖼️ Add Poster to Cart
+                  {isCheckingOut ? "Processing..." : "🖼️ Buy Poster - ₹" + product.price}
                 </Button>
               </div>
 
@@ -153,14 +201,18 @@ export default function ProductDetail() {
                   </Button>
                 </div>
                 {generatedImage && (
-                  <Button
-                    size="lg"
-                    variant="secondary"
-                    className="w-full"
-                    onClick={handleAddToCart}
-                  >
-                    Add {selectedMerchType} to Cart
-                  </Button>
+                  <>
+                    <p className="text-xl font-bold text-gradient">₹{MERCH_PRICE}</p>
+                    <Button
+                      size="lg"
+                      variant="secondary"
+                      className="w-full"
+                      onClick={() => handleCheckout("merch")}
+                      disabled={isCheckingOut}
+                    >
+                      {isCheckingOut ? "Processing..." : `Buy ${selectedMerchType} - ₹${MERCH_PRICE}`}
+                    </Button>
+                  </>
                 )}
               </div>
             </motion.div>

@@ -1,11 +1,37 @@
-import { Link } from "react-router-dom";
+import { useState, FormEvent, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { signIn, user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await signIn(email, password);
+    } catch (error) {
+      console.error("Login error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <motion.div
@@ -24,7 +50,7 @@ export default function Login() {
         </div>
 
         <div className="glass-card rounded-3xl p-8">
-          <form className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -32,6 +58,9 @@ export default function Login() {
                 type="email"
                 placeholder="you@example.com"
                 className="glass-card"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
 
@@ -42,11 +71,20 @@ export default function Login() {
                 type="password"
                 placeholder="••••••••"
                 className="glass-card"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
 
-            <Button type="submit" variant="neon" size="lg" className="w-full">
-              Sign In
+            <Button 
+              type="submit" 
+              variant="neon" 
+              size="lg" 
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
 
