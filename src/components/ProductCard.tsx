@@ -41,7 +41,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
             </p>
             <div className="flex items-center justify-between">
               <span className="text-2xl font-bold text-gradient">
-                ${product.price}
+                ₹{product.price}
               </span>
               <span className="text-sm text-muted-foreground">View Details →</span>
             </div>
