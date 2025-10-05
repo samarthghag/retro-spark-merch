@@ -50,7 +50,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-border/50 pt-8 text-center text-muted-foreground text-sm">
-          <p>© 2025 RetroMerch. Built with ❤️ using Lovable.</p>
+          <p>© 2025 RetroMerch. Built with ❤️</p>
         </div>
       </div>
     </footer>
