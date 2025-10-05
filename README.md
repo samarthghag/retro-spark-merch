@@ -197,3 +197,15 @@ npm run lint     # run ESLint
 - Add a `CONTRIBUTING.md` and PR/issue templates for consistency.
 
 If you'd like, I can implement any of the recommended follow-ups now (move the logo, add CI, or wire up tests). 
+
+### SPA hosting note (Vercel / Netlify)
+
+Because this is a single-page application (React Router client-side routing), direct navigation to a route like `/success?session_id=...` can return a 404 from static hosts unless the host is configured to rewrite requests to `index.html`.
+
+I added a `vercel.json` with a rewrite rule to serve `index.html` for all routes. If you host on Netlify, add a `_redirects` file with:
+
+```
+/*    /index.html   200
+```
+
+Testing locally: the dev server (`npm run dev`) already handles routes correctly. For production preview, use `npm run preview` and open the preview URL, or deploy to Vercel/Netlify and confirm the rewrite is present.
